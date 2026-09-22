@@ -4,7 +4,6 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/google/uuid"
 	"github.com/mdflamingo/fgo-tracker-backend/internal/logger"
@@ -43,7 +42,13 @@ func NewTaskHandler(taskService *service.TaskService) *TaskHandler {
 // @Failure      500  {object} model.ResponseError     "Internal Server Error"
 // @Router       /api/task/list [get]
 func (h *TaskHandler) GetList(w http.ResponseWriter, r *http.Request) {
-	tasks, err := h.taskService.GetList()
+	filter, err := parseFilters(r)
+	if err != nil {
+		logger.Log.Error("handler: failed parsed filters", zap.Error(err))
+		model.ResponseWithError(w, r, http.StatusBadRequest, "Bad request")
+		return
+	}
+	tasks, err := h.taskService.GetList(filter)
 	if err != nil {
 		logger.Log.Error("handler: failed to get tasks", zap.Error(err))
 		model.ResponseWithError(w, r, http.StatusInternalServerError, "Internal Server Error")
@@ -203,12 +208,4 @@ func (h *TaskHandler) DeleteTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.Status(r, http.StatusOK)
-}
-
-func parseTaskID(r *http.Request) (uuid.UUID, error) {
-	idStr := chi.URLParam(r, "id")
-	if idStr == "" {
-		return uuid.Nil, errors.New("task ID is required")
-	}
-	return uuid.Parse(idStr)
 }

@@ -20,8 +20,8 @@ func NewTaskService(repo *pg.DBStorage) *TaskService {
 	return &TaskService{repo: repo}
 }
 
-func (s *TaskService) GetList() ([]model.TaskListResponse, error) {
-	tasks, err := s.repo.GetTaskList()
+func (s *TaskService) GetList(filter model.TaskFilter) ([]model.TaskListResponse, error) {
+	tasks, err := s.repo.GetTaskList(filter)
 	if err != nil {
 		logger.Log.Error("failed to get tasks list", zap.Error(err))
 		return nil, fmt.Errorf("TaskService.GetList: %w", err)

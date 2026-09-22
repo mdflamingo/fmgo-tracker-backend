@@ -15,15 +15,6 @@ var (
 	ErrTaskNotFound = errors.New("task not found")
 )
 
-// type DBStorage struct {
-// 	pool *pgxpool.Pool
-// }
-
-// func (d *DBStorage) Close() error {
-// 	d.pool.Close()
-// 	return nil
-// }
-
 func (d *DBStorage) CreateTask(task model.TaskCreate, userTaskList []model.TaskUserCreate) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -195,36 +186,6 @@ func derefStr(s *string) string {
 	return ""
 }
 
-func (d *DBStorage) GetTaskList() ([]model.TaskListResponse, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-
-	rows, err := d.pool.Query(ctx,
-		`SELECT t.id, t.name, t.description, t.status, t.priority, p.id, p.name
-			FROM task t
-			LEFT JOIN project p ON t.project_id = p.id
-			ORDER BY t.created_at DESC`)
-	if err != nil {
-		return nil, fmt.Errorf("query execution error: %w", err)
-	}
-	defer rows.Close()
-
-	tasksList := make([]model.TaskListResponse, 0)
-
-	for rows.Next() {
-		var task model.TaskListResponse
-		if err := rows.Scan(&task.Id, &task.Name, &task.Description, &task.Status, &task.Priority, &task.ProjectId, &task.ProjectName); err != nil {
-			return nil, fmt.Errorf("data scan error: %w", err)
-		}
-		tasksList = append(tasksList, task)
-	}
-	if err = rows.Err(); err != nil {
-		return nil, fmt.Errorf("rows processing error: %w", err)
-	}
-
-	return tasksList, nil
-}
-
 func (d *DBStorage) UpdateTask(taskID uuid.UUID, task model.TaskUpdate, userTasks []model.TaskUserCreate) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -306,4 +267,87 @@ func (d *DBStorage) DeleteTask(taskID uuid.UUID) error {
 	}
 
 	return nil
+}
+
+func (d *DBStorage) GetTaskList(filter model.TaskFilter) ([]model.TaskListResponse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	namePattern := "%" + filter.Name + "%"
+	assigneeUUIDs := nilIfEmpty(filter.AssignedIds)
+	reviewerUUIDs := nilIfEmpty(filter.ReviewerIds)
+
+	var statusParam *string
+	if filter.Status != "" {
+		s := string(filter.Status)
+		statusParam = &s
+	}
+
+	var priorityParam *string
+	if filter.Priority != "" {
+		p := string(filter.Priority)
+		priorityParam = &p
+	}
+
+	limit := filter.Limit
+	if limit <= 0 {
+		limit = 50
+	}
+
+	rows, err := d.pool.Query(ctx,
+		`SELECT t.id, t.name, t.description, t.status, t.priority, p.id, p.name
+		FROM task t
+		LEFT JOIN project p ON t.project_id = p.id
+		WHERE ($1::uuid IS NULL OR p.id = $1)
+		  AND ($2 = '' OR t.name ILIKE $2)
+		  AND ($3::task_status IS NULL OR t.status = $3)
+		  AND ($4::task_priority IS NULL OR t.priority = $4)
+		  AND ($5::uuid IS NULL OR EXISTS (
+		      SELECT 1 FROM user_task ut
+		      WHERE ut.task_id = t.id AND ut.role = 'creator' AND ut.user_id = $5
+		  ))
+		  AND ($6::uuid[] IS NULL OR EXISTS (
+		      SELECT 1 FROM user_task ut
+		      WHERE ut.task_id = t.id AND ut.role = 'assignee' AND ut.user_id = ANY($6)
+		  ))
+		  AND ($7::uuid[] IS NULL OR EXISTS (
+		      SELECT 1 FROM user_task ut
+		      WHERE ut.task_id = t.id AND ut.role = 'reviewer' AND ut.user_id = ANY($7)
+		  ))
+		ORDER BY t.created_at DESC
+		LIMIT $8 OFFSET $9`,
+		nullUUID(filter.ProjectId),
+		namePattern,
+		statusParam,
+		priorityParam,
+		nullUUID(filter.CreatorId),
+		assigneeUUIDs,
+		reviewerUUIDs,
+		limit,
+		filter.Offset,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("query execution error: %w", err)
+	}
+	defer rows.Close()
+
+	tasksList := make([]model.TaskListResponse, 0)
+
+	for rows.Next() {
+		var task model.TaskListResponse
+		if err := rows.Scan(
+			&task.Id, &task.Name, &task.Description,
+			&task.Status, &task.Priority,
+			&task.ProjectId, &task.ProjectName,
+		); err != nil {
+			return nil, fmt.Errorf("data scan error: %w", err)
+		}
+		tasksList = append(tasksList, task)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows processing error: %w", err)
+	}
+
+	return tasksList, nil
 }
