@@ -4,7 +4,6 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/google/uuid"
 	"github.com/mdflamingo/fgo-tracker-backend/internal/logger"
@@ -23,15 +22,33 @@ func NewTaskHandler(taskService *service.TaskService) *TaskHandler {
 	return &TaskHandler{taskService: taskService}
 }
 
-// @Summary Get all tasks
-// @Description Return all tasks in system
-// @Tags Tasks
-// @Produce json
-// @Success 200 {array} model.TaskListResponse "Tasks"
-// @Failure 500 {object} model.ResponseError "Internal Server Error"
-// @Router /api/task/list [get]
+// @Summary      Get all tasks
+// @Description  Return all tasks in system with optional filters
+// @Tags         Tasks
+// @Produce      json
+//
+// @Param        name         query     string     false  "name"
+// @Param        status       query     string     false  "status" Enums(backlog, in_progress, review, done)
+// @Param        priority     query     string     false  "priority" Enums(low, medium, high, critical)
+// @Param        project_id   query     string     false  "project"
+// @Param        creator_id   query     string     false  "creator"
+// @Param        assigned_ids query     []string   false  "assignee" collectionFormat(csv)
+// @Param        reviewer_ids query     []string   false  "reviewer" collectionFormat(csv)
+// @Param        limit        query     int        false  "Number of items to return" default(50)
+// @Param        offset       query     int        false  "Number of items to skip" default(0)
+//
+// @Success      200  {array}  model.TaskListResponse  "Tasks"
+// @Failure      400  {object} model.ResponseError     "Bad Request (invalid parameters)"
+// @Failure      500  {object} model.ResponseError     "Internal Server Error"
+// @Router       /api/task/list [get]
 func (h *TaskHandler) GetList(w http.ResponseWriter, r *http.Request) {
-	tasks, err := h.taskService.GetList()
+	filter, err := parseFilters(r)
+	if err != nil {
+		logger.Log.Error("handler: failed parsed filters", zap.Error(err))
+		model.ResponseWithError(w, r, http.StatusBadRequest, "Bad request")
+		return
+	}
+	tasks, err := h.taskService.GetList(filter)
 	if err != nil {
 		logger.Log.Error("handler: failed to get tasks", zap.Error(err))
 		model.ResponseWithError(w, r, http.StatusInternalServerError, "Internal Server Error")
@@ -191,12 +208,4 @@ func (h *TaskHandler) DeleteTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.Status(r, http.StatusOK)
-}
-
-func parseTaskID(r *http.Request) (uuid.UUID, error) {
-	idStr := chi.URLParam(r, "id")
-	if idStr == "" {
-		return uuid.Nil, errors.New("task ID is required")
-	}
-	return uuid.Parse(idStr)
 }
