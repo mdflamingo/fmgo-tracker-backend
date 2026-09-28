@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/coreos/go-oidc/v3/oidc"
+	"github.com/mdflamingo/fgo-tracker-backend/internal/apiresponse"
 	"github.com/mdflamingo/fgo-tracker-backend/internal/logger"
 	"go.uber.org/zap"
 )
@@ -40,7 +41,7 @@ func (v *OIDCValidator) AuthMiddleware() func(http.Handler) http.Handler {
 			authHeader := r.Header.Get("Authorization")
 			if authHeader == "" {
 				logger.Log.Debug("no authorization header found")
-				http.Error(w, "Unauthorized: missing authorization header", http.StatusUnauthorized)
+				apiresponse.ResponseWithError(w, r, http.StatusUnauthorized, "Unauthorized: missing authorization header")
 				return
 			}
 
@@ -49,7 +50,7 @@ func (v *OIDCValidator) AuthMiddleware() func(http.Handler) http.Handler {
 			userID, err := v.validateJWT(tokenString)
 			if err != nil {
 				logger.Log.Warn("invalid token", zap.Error(err))
-				http.Error(w, "Unauthorized: invalid token", http.StatusUnauthorized)
+				apiresponse.ResponseWithError(w, r, http.StatusUnauthorized, "Unauthorized: invalid token")
 				return
 			}
 

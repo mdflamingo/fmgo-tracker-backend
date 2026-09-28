@@ -1,5 +1,12 @@
 basePath: /
 definitions:
+  apiresponse.ResponseError:
+    properties:
+      code:
+        type: integer
+      error:
+        type: string
+    type: object
   model.ProjectCreateRequest:
     properties:
       member_ids:
@@ -36,13 +43,6 @@ definitions:
       id:
         type: string
       name:
-        type: string
-    type: object
-  model.ResponseError:
-    properties:
-      code:
-        type: integer
-      error:
         type: string
     type: object
   model.TaskCreateRequest:
@@ -282,11 +282,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/model.ResponseError'
+            $ref: '#/definitions/apiresponse.ResponseError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/model.ResponseError'
+            $ref: '#/definitions/apiresponse.ResponseError'
       summary: Create new projects
       tags:
       - Projects
@@ -305,7 +305,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/model.ResponseError'
+            $ref: '#/definitions/apiresponse.ResponseError'
       summary: Get all projects
       tags:
       - Projects
@@ -331,11 +331,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/model.ResponseError'
+            $ref: '#/definitions/apiresponse.ResponseError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/model.ResponseError'
+            $ref: '#/definitions/apiresponse.ResponseError'
       summary: Create new task
       tags:
       - Tasks
@@ -354,15 +354,15 @@ paths:
         "400":
           description: Invalid task ID
           schema:
-            $ref: '#/definitions/model.ResponseError'
+            $ref: '#/definitions/apiresponse.ResponseError'
         "404":
           description: Task not found
           schema:
-            $ref: '#/definitions/model.ResponseError'
+            $ref: '#/definitions/apiresponse.ResponseError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/model.ResponseError'
+            $ref: '#/definitions/apiresponse.ResponseError'
       summary: Delete task
       tags:
       - Tasks
@@ -384,15 +384,15 @@ paths:
         "400":
           description: Invalid task ID
           schema:
-            $ref: '#/definitions/model.ResponseError'
+            $ref: '#/definitions/apiresponse.ResponseError'
         "404":
           description: Task not found
           schema:
-            $ref: '#/definitions/model.ResponseError'
+            $ref: '#/definitions/apiresponse.ResponseError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/model.ResponseError'
+            $ref: '#/definitions/apiresponse.ResponseError'
       summary: Get task by ID
       tags:
       - Tasks
@@ -418,15 +418,15 @@ paths:
         "400":
           description: Invalid request
           schema:
-            $ref: '#/definitions/model.ResponseError'
+            $ref: '#/definitions/apiresponse.ResponseError'
         "404":
           description: Task not found
           schema:
-            $ref: '#/definitions/model.ResponseError'
+            $ref: '#/definitions/apiresponse.ResponseError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/model.ResponseError'
+            $ref: '#/definitions/apiresponse.ResponseError'
       summary: Task update
       tags:
       - Task
@@ -500,11 +500,11 @@ paths:
         "400":
           description: Bad Request (invalid parameters)
           schema:
-            $ref: '#/definitions/model.ResponseError'
+            $ref: '#/definitions/apiresponse.ResponseError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/model.ResponseError'
+            $ref: '#/definitions/apiresponse.ResponseError'
       summary: Get all tasks
       tags:
       - Tasks
@@ -523,7 +523,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/model.ResponseError'
+            $ref: '#/definitions/apiresponse.ResponseError'
       summary: Get all users
       tags:
       - Users

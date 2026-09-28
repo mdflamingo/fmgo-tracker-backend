@@ -53,13 +53,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseError"
+                            "$ref": "#/definitions/apiresponse.ResponseError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseError"
+                            "$ref": "#/definitions/apiresponse.ResponseError"
                         }
                     }
                 }
@@ -88,7 +88,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseError"
+                            "$ref": "#/definitions/apiresponse.ResponseError"
                         }
                     }
                 }
@@ -128,13 +128,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseError"
+                            "$ref": "#/definitions/apiresponse.ResponseError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseError"
+                            "$ref": "#/definitions/apiresponse.ResponseError"
                         }
                     }
                 }
@@ -241,13 +241,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request (invalid parameters)",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseError"
+                            "$ref": "#/definitions/apiresponse.ResponseError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseError"
+                            "$ref": "#/definitions/apiresponse.ResponseError"
                         }
                     }
                 }
@@ -282,19 +282,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid task ID",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseError"
+                            "$ref": "#/definitions/apiresponse.ResponseError"
                         }
                     },
                     "404": {
                         "description": "Task not found",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseError"
+                            "$ref": "#/definitions/apiresponse.ResponseError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseError"
+                            "$ref": "#/definitions/apiresponse.ResponseError"
                         }
                     }
                 }
@@ -333,19 +333,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid request",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseError"
+                            "$ref": "#/definitions/apiresponse.ResponseError"
                         }
                     },
                     "404": {
                         "description": "Task not found",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseError"
+                            "$ref": "#/definitions/apiresponse.ResponseError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseError"
+                            "$ref": "#/definitions/apiresponse.ResponseError"
                         }
                     }
                 }
@@ -372,19 +372,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid task ID",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseError"
+                            "$ref": "#/definitions/apiresponse.ResponseError"
                         }
                     },
                     "404": {
                         "description": "Task not found",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseError"
+                            "$ref": "#/definitions/apiresponse.ResponseError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseError"
+                            "$ref": "#/definitions/apiresponse.ResponseError"
                         }
                     }
                 }
@@ -413,7 +413,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseError"
+                            "$ref": "#/definitions/apiresponse.ResponseError"
                         }
                     }
                 }
@@ -421,6 +421,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "apiresponse.ResponseError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
         "model.ProjectCreateRequest": {
             "type": "object",
             "properties": {
@@ -475,17 +486,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.ResponseError": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "error": {
                     "type": "string"
                 }
             }

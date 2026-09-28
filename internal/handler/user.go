@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/go-chi/render"
+	"github.com/mdflamingo/fgo-tracker-backend/internal/apiresponse"
 	"github.com/mdflamingo/fgo-tracker-backend/internal/logger"
-	"github.com/mdflamingo/fgo-tracker-backend/internal/model"
 	"github.com/mdflamingo/fgo-tracker-backend/internal/service"
 	"go.uber.org/zap"
 )
@@ -23,13 +23,13 @@ func NewUserHandler(userService *service.UserService) *UserHandler {
 // @Tags Users
 // @Produce json
 // @Success 200 {array} model.UserDB "Users"
-// @Failure 500 {object} model.ResponseError "Internal Server Error"
+// @Failure 500 {object} apiresponse.ResponseError "Internal Server Error"
 // @Router /api/user/list [get]
 func (h *UserHandler) GetList(w http.ResponseWriter, r *http.Request) {
 	users, err := h.userService.GetList()
 	if err != nil {
 		logger.Log.Error("handler: failed to get users", zap.Error(err))
-		model.ResponseWithError(w, r, http.StatusInternalServerError, "Internal Server Error")
+		apiresponse.ResponseWithError(w, r, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 

@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-chi/render"
 	"github.com/google/uuid"
+	"github.com/mdflamingo/fgo-tracker-backend/internal/apiresponse"
 	"github.com/mdflamingo/fgo-tracker-backend/internal/logger"
 	"github.com/mdflamingo/fgo-tracker-backend/internal/model"
 	"github.com/mdflamingo/fgo-tracker-backend/internal/service"
@@ -25,13 +26,13 @@ func NewProjectHandler(projectService *service.ProjectService) *ProjectHandler {
 // @Tags Projects
 // @Produce json
 // @Success 200 {array} model.ProjectListResponse "Tasks"
-// @Failure 500 {object} model.ResponseError "Internal Server Error"
+// @Failure 500 {object} apiresponse.ResponseError "Internal Server Error"
 // @Router /api/project/list [get]
 func (h *ProjectHandler) GetList(w http.ResponseWriter, r *http.Request) {
 	tasks, err := h.projectService.GetList()
 	if err != nil {
 		logger.Log.Error("handler: failed to get projects", zap.Error(err))
-		model.ResponseWithError(w, r, http.StatusInternalServerError, "Internal Server Error")
+		apiresponse.ResponseWithError(w, r, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
@@ -46,21 +47,21 @@ func (h *ProjectHandler) GetList(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param request body model.ProjectCreateRequest true "Project data"
 // @Success 201 {object} model.ProjectCreateResponse "Created project ID"
-// @Failure 400 {object} model.ResponseError "Bad Request"
-// @Failure 500 {object} model.ResponseError "Internal Server Error"
+// @Failure 400 {object} apiresponse.ResponseError "Bad Request"
+// @Failure 500 {object} apiresponse.ResponseError "Internal Server Error"
 // @Router /api/project [post]
 func (h *ProjectHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 	var req model.ProjectCreateRequest
 
 	if err := render.DecodeJSON(r.Body, &req); err != nil {
 		logger.Log.Error("handler: decode JSON error", zap.Error(err))
-		model.ResponseWithError(w, r, http.StatusBadRequest, "Invalid JSON payload")
+		apiresponse.ResponseWithError(w, r, http.StatusBadRequest, "Invalid JSON payload")
 		return
 	}
 
 	if err := validator.GlobalValidator.Struct(req); err != nil {
 		logger.Log.Error("handler: request body validation error", zap.Error(err))
-		model.ResponseWithValidationError(w, r, validator.FormatValidationError(err))
+		apiresponse.ResponseWithValidationError(w, r, validator.FormatValidationError(err))
 		return
 	}
 
@@ -69,7 +70,7 @@ func (h *ProjectHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 	response, err := h.projectService.CreateProject(req, creatorID)
 	if err != nil {
 		logger.Log.Error("handler: failed to create project", zap.Error(err))
-		model.ResponseWithError(w, r, http.StatusInternalServerError, "Internal Server Error")
+		apiresponse.ResponseWithError(w, r, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 

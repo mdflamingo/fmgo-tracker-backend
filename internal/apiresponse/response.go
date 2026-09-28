@@ -1,4 +1,4 @@
-package model
+package apiresponse
 
 import (
 	"net/http"
