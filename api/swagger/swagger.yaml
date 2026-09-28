@@ -4,6 +4,10 @@ definitions:
     properties:
       code:
         type: integer
+      details:
+        additionalProperties:
+          type: string
+        type: object
       error:
         type: string
     type: object
@@ -17,6 +21,7 @@ definitions:
         type: array
       name:
         example: Project name
+        maxLength: 256
         type: string
       viewer_ids:
         example:
@@ -24,6 +29,8 @@ definitions:
         items:
           type: string
         type: array
+    required:
+    - name
     type: object
   model.ProjectCreateResponse:
     properties:

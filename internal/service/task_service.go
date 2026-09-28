@@ -48,8 +48,8 @@ func (s *TaskService) CreateTask(req model.TaskCreateRequest, creatorID uuid.UUI
 		Id:          taskID,
 		Name:        req.Name,
 		Description: req.Description,
-		Status:      req.Status,
-		Priority:    req.Priority,
+		Status:      defaultTaskStatus(req.Status),
+		Priority:    defaultTaskPriority(req.Priority),
 		ProjectId:   req.ProjectId,
 		Deadline:    req.Deadline,
 	}
@@ -63,7 +63,7 @@ func (s *TaskService) CreateTask(req model.TaskCreateRequest, creatorID uuid.UUI
 		Role:   model.TaskCreator,
 	})
 
-	for _, assigneeID := range *req.AssignedIds {
+	for _, assigneeID := range req.AssignedIds {
 		if assigneeID != uuid.Nil {
 			createUserTasks = append(createUserTasks, model.TaskUserCreate{
 				Id:     generateUUIDv7(),
@@ -74,14 +74,15 @@ func (s *TaskService) CreateTask(req model.TaskCreateRequest, creatorID uuid.UUI
 		}
 	}
 
-	for _, reviewerID := range *req.ReviewerIds {
-		createUserTasks = append(createUserTasks, model.TaskUserCreate{
-			Id:     generateUUIDv7(),
-			UserId: reviewerID,
-			TaskId: taskID,
-			Role:   model.TaskReviewer,
-		})
-
+	for _, reviewerID := range req.ReviewerIds {
+		if reviewerID != uuid.Nil {
+			createUserTasks = append(createUserTasks, model.TaskUserCreate{
+				Id:     generateUUIDv7(),
+				UserId: reviewerID,
+				TaskId: taskID,
+				Role:   model.TaskReviewer,
+			})
+		}
 	}
 
 	if err := s.repo.CreateTask(createTask, createUserTasks); err != nil {
@@ -106,6 +107,31 @@ func (s *TaskService) UpdateTask(ctx context.Context, taskID uuid.UUID, req mode
 		projectID = existingTask.Project.Id
 	}
 
+	status := req.Status
+	if status == "" {
+		status = existingTask.Status
+	}
+
+	priority := req.Priority
+	if priority == "" {
+		priority = existingTask.Priority
+	}
+
+	description := existingTask.Description
+	if req.Description != nil {
+		description = *req.Description
+	}
+
+	deadline := req.Deadline
+	if deadline == nil {
+		deadline = existingTask.Deadline
+	}
+
+	completedAt := req.CompletedAt
+	if completedAt == nil {
+		completedAt = existingTask.Completed
+	}
+
 	var updateUserTasks []model.TaskUserCreate
 
 	if req.AssignedIds == nil {
@@ -118,7 +144,7 @@ func (s *TaskService) UpdateTask(ctx context.Context, taskID uuid.UUID, req mode
 			})
 		}
 	} else {
-		for _, assigneeID := range *req.AssignedIds {
+		for _, assigneeID := range req.AssignedIds {
 			if assigneeID != uuid.Nil {
 				updateUserTasks = append(updateUserTasks, model.TaskUserCreate{
 					Id:     generateUUIDv7(),
@@ -140,7 +166,7 @@ func (s *TaskService) UpdateTask(ctx context.Context, taskID uuid.UUID, req mode
 			})
 		}
 	} else {
-		for _, reviewerID := range *req.ReviewerIds {
+		for _, reviewerID := range req.ReviewerIds {
 			if reviewerID != uuid.Nil {
 				updateUserTasks = append(updateUserTasks, model.TaskUserCreate{
 					Id:     generateUUIDv7(),
@@ -155,12 +181,12 @@ func (s *TaskService) UpdateTask(ctx context.Context, taskID uuid.UUID, req mode
 	updateTask := model.TaskUpdate{
 		Id:          taskID,
 		Name:        req.Name,
-		Description: req.Description,
-		Status:      req.Status,
-		Priority:    req.Priority,
+		Description: description,
+		Status:      status,
+		Priority:    priority,
 		ProjectId:   projectID,
-		Deadline:    req.Deadline,
-		CompletedAt: req.CompletedAt,
+		Deadline:    deadline,
+		CompletedAt: completedAt,
 	}
 
 	if err := s.repo.UpdateTask(taskID, updateTask, updateUserTasks); err != nil {
@@ -180,4 +206,21 @@ func (s *TaskService) DeleteTask(ctx context.Context, taskID uuid.UUID) error {
 		return fmt.Errorf("TaskService.DeleteTask: %w", err)
 	}
 	return nil
+}
+
+// defaultTaskStatus and defaultTaskPriority mirror the DEFAULT clauses of the
+// task.status and task.priority columns. CreateTask passes values to the
+// INSERT explicitly, so the column defaults would never apply on their own.
+func defaultTaskStatus(status model.TaskStatus) model.TaskStatus {
+	if status == "" {
+		return model.TaskStatusBacklog
+	}
+	return status
+}
+
+func defaultTaskPriority(priority model.TaskPriority) model.TaskPriority {
+	if priority == "" {
+		return model.TaskPriorityLow
+	}
+	return priority
 }

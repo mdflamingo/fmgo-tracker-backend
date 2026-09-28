@@ -44,7 +44,7 @@ func (s *ProjectService) CreateProject(req model.ProjectCreateRequest, creatorID
 		Role:      model.ProjectOwner,
 	})
 
-	for _, memberID := range *req.MemberIds {
+	for _, memberID := range req.MemberIds {
 		if memberID != uuid.Nil {
 			createUserProjects = append(createUserProjects, model.ProjectUserCreate{
 				Id:        generateUUIDv7(),
@@ -55,14 +55,15 @@ func (s *ProjectService) CreateProject(req model.ProjectCreateRequest, creatorID
 		}
 	}
 
-	for _, viewerID := range *req.ViewerIds {
-		createUserProjects = append(createUserProjects, model.ProjectUserCreate{
-			Id:        generateUUIDv7(),
-			UserId:    viewerID,
-			ProjectId: projectID,
-			Role:      model.ProjectViewer,
-		})
-
+	for _, viewerID := range req.ViewerIds {
+		if viewerID != uuid.Nil {
+			createUserProjects = append(createUserProjects, model.ProjectUserCreate{
+				Id:        generateUUIDv7(),
+				UserId:    viewerID,
+				ProjectId: projectID,
+				Role:      model.ProjectViewer,
+			})
+		}
 	}
 
 	if err := s.repo.CreateProject(createProject, createUserProjects); err != nil {

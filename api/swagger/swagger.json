@@ -421,6 +421,12 @@
                 "code": {
                     "type": "integer"
                 },
+                "details": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "error": {
                     "type": "string"
                 }
@@ -428,6 +434,9 @@
         },
         "model.ProjectCreateRequest": {
             "type": "object",
+            "required": [
+                "name"
+            ],
             "properties": {
                 "member_ids": {
                     "type": "array",
@@ -440,6 +449,7 @@
                 },
                 "name": {
                     "type": "string",
+                    "maxLength": 256,
                     "example": "Project name"
                 },
                 "viewer_ids": {

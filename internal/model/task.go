@@ -39,20 +39,20 @@ type TaskCreateRequest struct {
 	Priority    TaskPriority `json:"priority" example:"medium" description:"Task priority" validate:"omitempty,oneof=low medium high critical"`
 	ProjectId   uuid.UUID    `json:"project_id" example:"60601fee-2bf1-4721-ae6f-7636e79a0cba" description:"Project id" validate:"required,uuid"`
 	Deadline    *time.Time   `json:"deadline" example:"2025-07-01T00:00:00Z" description:"Deadline date" validate:"omitempty,gt=0"`
-	AssignedIds *[]uuid.UUID `json:"assigned_ids" example:"60601fee-2bf1-4721-ae6f-7636e79a0cba" description:"User ids" validate:"omitempty,dive,uuid"`
-	ReviewerIds *[]uuid.UUID `json:"reviewer_ids" example:"60601fee-2bf1-4721-ae6f-7636e79a0cba" description:"User ids" validate:"omitempty,dive,uuid"`
+	AssignedIds []uuid.UUID  `json:"assigned_ids" example:"60601fee-2bf1-4721-ae6f-7636e79a0cba" description:"User ids" validate:"omitempty,dive,uuid"`
+	ReviewerIds []uuid.UUID  `json:"reviewer_ids" example:"60601fee-2bf1-4721-ae6f-7636e79a0cba" description:"User ids" validate:"omitempty,dive,uuid"`
 }
 
 type TaskUpdateRequest struct {
 	Name        string       `json:"name" example:"Update user table" description:"Task name" validate:"required,max=255"`
-	Description string       `json:"description" example:"Some description" description:"Task description" validate:"omitempty,max=1000"`
+	Description *string      `json:"description" example:"Some description" description:"Task description; omit to keep the current one, pass an empty string to clear it" validate:"omitempty,max=1000"`
 	Status      TaskStatus   `json:"status" example:"backlog" description:"Task status" validate:"omitempty,oneof=backlog in_progress review done"`
 	Priority    TaskPriority `json:"priority" example:"medium" description:"Task priority" validate:"omitempty,oneof=low medium high critical"`
 	ProjectId   uuid.UUID    `json:"project_id" example:"60601fee-2bf1-4721-ae6f-7636e79a0cba" description:"Project id" validate:"required,uuid"`
 	Deadline    *time.Time   `json:"deadline" example:"2025-07-01T00:00:00Z" description:"Deadline date" validate:"omitempty,gt=0"`
 	CompletedAt *time.Time   `json:"completed_at" example:"2025-07-01T00:00:00Z" description:"Completed date" validate:"omitempty"`
-	AssignedIds *[]uuid.UUID `json:"assigned_ids" example:"60601fee-2bf1-4721-ae6f-7636e79a0cba" validate:"omitempty,dive,uuid"`
-	ReviewerIds *[]uuid.UUID `json:"reviewer_ids" example:"60601fee-2bf1-4721-ae6f-7636e79a0cba" validate:"omitempty,dive,uuid"`
+	AssignedIds []uuid.UUID  `json:"assigned_ids" example:"60601fee-2bf1-4721-ae6f-7636e79a0cba" validate:"omitempty,dive,uuid"`
+	ReviewerIds []uuid.UUID  `json:"reviewer_ids" example:"60601fee-2bf1-4721-ae6f-7636e79a0cba" validate:"omitempty,dive,uuid"`
 }
 
 type TaskCreateResponse struct {

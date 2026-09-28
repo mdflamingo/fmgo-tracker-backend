@@ -17,9 +17,9 @@ type ProjectListResponse struct {
 }
 
 type ProjectCreateRequest struct {
-	Name      string       `json:"name" example:"Project name"`
-	MemberIds *[]uuid.UUID `json:"member_ids" example:"60601fee-2bf1-4721-ae6f-7636e79a0cba" description:"User ids" validate:"omitempty,dive,uuid"`
-	ViewerIds *[]uuid.UUID `json:"viewer_ids" example:"60601fee-2bf1-4721-ae6f-7636e79a0cba" description:"User ids" validate:"omitempty,dive,uuid"`
+	Name      string      `json:"name" example:"Project name" validate:"required,max=256"`
+	MemberIds []uuid.UUID `json:"member_ids" example:"60601fee-2bf1-4721-ae6f-7636e79a0cba" description:"User ids" validate:"omitempty,dive,uuid"`
+	ViewerIds []uuid.UUID `json:"viewer_ids" example:"60601fee-2bf1-4721-ae6f-7636e79a0cba" description:"User ids" validate:"omitempty,dive,uuid"`
 }
 
 type ProjectCreateResponse struct {

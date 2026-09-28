@@ -427,6 +427,12 @@ const docTemplate = `{
                 "code": {
                     "type": "integer"
                 },
+                "details": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "error": {
                     "type": "string"
                 }
@@ -434,6 +440,9 @@ const docTemplate = `{
         },
         "model.ProjectCreateRequest": {
             "type": "object",
+            "required": [
+                "name"
+            ],
             "properties": {
                 "member_ids": {
                     "type": "array",
@@ -446,6 +455,7 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string",
+                    "maxLength": 256,
                     "example": "Project name"
                 },
                 "viewer_ids": {
