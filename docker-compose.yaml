@@ -21,6 +21,24 @@ services:
       timeout: 5s
       retries: 5
 
+  keycloak:
+    image: keycloak/keycloak:26.3.2
+    container_name: keycloak
+    environment:
+      KC_DB: postgres
+      KC_DB_DRIVER: org.postgresql.Driver
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
+      KC_DB_SCHEMA: public
+      KC_DB_URL: jdbc:postgresql://postgres:5432/postgres
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    ports:
+      - "8155:8080"
+    depends_on:  
+      - postgres
+    command: start-dev # Режим разработки (не для продакшена!)
+
   # app:
   #   build: .
   #   container_name: fmgo-tracker-backend

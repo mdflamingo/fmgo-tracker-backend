@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/mdflamingo/fgo-tracker-backend/internal/auth"
 	"github.com/mdflamingo/fgo-tracker-backend/internal/config"
 	"github.com/mdflamingo/fgo-tracker-backend/internal/logger"
 	pg "github.com/mdflamingo/fgo-tracker-backend/internal/repository/postgres"
@@ -30,11 +31,23 @@ func NewRouter(conf *config.Config, storage *pg.DBStorage) *chi.Mux {
 	r.Get("/swagger/*", httpSwagger.Handler(
 		httpSwagger.URL("/swagger/doc.json"),
 		httpSwagger.UIConfig(map[string]string{
-			"persistAuthorization": "true",
+			"persistAuthorization": "true", // Сохраняет токен после обновления страницы
 		}),
+		// httpSwagger.AfterScript(`
+		// 	if (window.ui && window.ui.initOAuth) {
+		// 		window.ui.initOAuth({
+		// 			clientId: "ВАШ_CLIENT_ID",
+		// 			clientSecret: "ВАШ_CLIENT_SECRET",
+		// 			realm: "ВАШ_REALM", // Обязательно для Keycloak
+		// 			appName: "Task Tracker API",
+		// 			scopeSeparator: " "
+		// 		});
+		// 	}
+		// `),
 	))
 
 	r.Route("/api", func(r chi.Router) {
+		r.Use(auth.AuthMiddleware(conf.SecretKey))
 		r.Route("/task", func(r chi.Router) {
 			r.Post("/", taskHandler.CreateTask)
 			r.Get("/list", taskHandler.GetList)
