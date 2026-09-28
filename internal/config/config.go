@@ -15,6 +15,11 @@ type Postgres struct {
 	PostgresPassword string
 }
 
+type Keycloak struct {
+	KeycloakURL string
+	ClientID    string
+}
+
 type Minio struct {
 	MinioEndpoint     string
 	MinioRootUser     string
@@ -24,13 +29,14 @@ type Minio struct {
 }
 
 type Config struct {
-	RunAddr     string
-	LogLevel    string
-	DataBaseDSN Postgres
-	Debug       string
-	SecretKey   string
-	Minio       Minio
-	ServerAddr  string
+	RunAddr    string
+	LogLevel   string
+	Debug      string
+	ServerAddr string
+
+	Postgres Postgres
+	Minio    Minio
+	Keycloak Keycloak
 }
 
 func GetConfig() *Config {
@@ -39,7 +45,6 @@ func GetConfig() *Config {
 		log.Fatal("Missing required .env file: ", err)
 
 	}
-	debug := os.Getenv("DEBUG")
 	pgConfig := Postgres{
 		PostgresDB:       os.Getenv("POSTGRES_DB"),
 		PostgresHost:     os.Getenv("POSTGRES_HOST"),
@@ -54,14 +59,18 @@ func GetConfig() *Config {
 		MinioBucket:       os.Getenv("MINIO_BUCKET"),
 		// MinioUseSSL:       os.Getenv("MINIO_SSL"),
 	}
+	keycloakConfig := Keycloak{
+		KeycloakURL: os.Getenv("KEYCLOAK_URL"),
+		ClientID:    os.Getenv("CLIENT_ID"),
+	}
 	mainConfig := Config{
-		RunAddr:     os.Getenv("RUN_ADDR"),
-		LogLevel:    os.Getenv("LOG_LEVEL"),
-		SecretKey:   os.Getenv("SECRET_KEY"),
-		ServerAddr:  os.Getenv("SERVER_ADDR"),
-		Minio:       minioConfig,
-		DataBaseDSN: pgConfig,
-		Debug:       debug,
+		RunAddr:    os.Getenv("RUN_ADDR"),
+		LogLevel:   os.Getenv("LOG_LEVEL"),
+		ServerAddr: os.Getenv("SERVER_ADDR"),
+		Debug:      os.Getenv("DEBUG"),
+		Minio:      minioConfig,
+		Postgres:   pgConfig,
+		Keycloak:   keycloakConfig,
 	}
 
 	return &mainConfig

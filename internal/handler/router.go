@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"log"
+
 	_ "github.com/mdflamingo/fgo-tracker-backend/api/swagger"
 
 	"github.com/go-chi/chi/v5"
@@ -16,6 +18,11 @@ import (
 func NewRouter(conf *config.Config, storage *pg.DBStorage) *chi.Mux {
 	r := chi.NewRouter()
 
+	oidcValidator, err := auth.NewOIDCValidator(conf.Keycloak.KeycloakURL, conf.Keycloak.ClientID)
+	if err != nil {
+		log.Fatalf("Failed to initialize OIDC validator: %v", err)
+	}
+
 	taskService := service.NewTaskService(storage)
 	userService := service.NewUserService(storage)
 	projectService := service.NewProjectService(storage)
@@ -30,24 +37,11 @@ func NewRouter(conf *config.Config, storage *pg.DBStorage) *chi.Mux {
 	// // Swagger documentation
 	r.Get("/swagger/*", httpSwagger.Handler(
 		httpSwagger.URL("/swagger/doc.json"),
-		httpSwagger.UIConfig(map[string]string{
-			"persistAuthorization": "true", // Сохраняет токен после обновления страницы
-		}),
-		// httpSwagger.AfterScript(`
-		// 	if (window.ui && window.ui.initOAuth) {
-		// 		window.ui.initOAuth({
-		// 			clientId: "ВАШ_CLIENT_ID",
-		// 			clientSecret: "ВАШ_CLIENT_SECRET",
-		// 			realm: "ВАШ_REALM", // Обязательно для Keycloak
-		// 			appName: "Task Tracker API",
-		// 			scopeSeparator: " "
-		// 		});
-		// 	}
-		// `),
+		httpSwagger.PersistAuthorization(true),
 	))
 
 	r.Route("/api", func(r chi.Router) {
-		r.Use(auth.AuthMiddleware(conf.SecretKey))
+		r.Use(oidcValidator.AuthMiddleware())
 		r.Route("/task", func(r chi.Router) {
 			r.Post("/", taskHandler.CreateTask)
 			r.Get("/list", taskHandler.GetList)

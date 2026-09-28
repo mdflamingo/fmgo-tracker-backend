@@ -5,9 +5,8 @@ import (
 	"errors"
 	"net/http"
 	"strings"
-	"time"
 
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/mdflamingo/fgo-tracker-backend/internal/logger"
 	"go.uber.org/zap"
 )
@@ -16,7 +15,26 @@ type contextKey string
 
 const userIDKey contextKey = "userID"
 
-func AuthMiddleware(secretKey string) func(http.Handler) http.Handler {
+type OIDCValidator struct {
+	verifier *oidc.IDTokenVerifier
+}
+
+func NewOIDCValidator(providerURL, clientID string) (*OIDCValidator, error) {
+	provider, err := oidc.NewProvider(context.Background(), providerURL)
+	if err != nil {
+		return nil, err
+	}
+
+	config := &oidc.Config{
+		ClientID: clientID,
+	}
+
+	return &OIDCValidator{
+		verifier: provider.Verifier(config),
+	}, nil
+}
+
+func (v *OIDCValidator) AuthMiddleware() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			authHeader := r.Header.Get("Authorization")
@@ -28,7 +46,7 @@ func AuthMiddleware(secretKey string) func(http.Handler) http.Handler {
 
 			tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
-			userID, err := validateJWT(tokenString, secretKey)
+			userID, err := v.validateJWT(tokenString)
 			if err != nil {
 				logger.Log.Warn("invalid token", zap.Error(err))
 				http.Error(w, "Unauthorized: invalid token", http.StatusUnauthorized)
@@ -41,51 +59,37 @@ func AuthMiddleware(secretKey string) func(http.Handler) http.Handler {
 	}
 }
 
-func validateJWT(tokenString, secretKey string) (int, error) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.New("unexpected signing method")
-		}
-		return []byte(secretKey), nil
-	})
-
+func (v *OIDCValidator) validateJWT(tokenString string) (string, error) {
+	idToken, err := v.verifier.Verify(context.Background(), tokenString)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 
-	if !token.Valid {
-		return 0, errors.New("invalid token")
+	var claims struct {
+		Subject string `json:"sub"`
 	}
 
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok {
-		return 0, errors.New("invalid token claims")
+	if err := idToken.Claims(&claims); err != nil {
+		return "", errors.New("failed to parse claims")
 	}
 
-	if exp, ok := claims["exp"].(float64); ok {
-		if time.Now().Unix() > int64(exp) {
-			return 0, errors.New("token expired")
-		}
+	if claims.Subject == "" {
+		return "", errors.New("subject (sub) not found in token")
 	}
 
-	userIDFloat, ok := claims["userID"].(float64)
-	if !ok {
-		return 0, errors.New("userID not found in token")
-	}
-
-	return int(userIDFloat), nil
+	return claims.Subject, nil
 }
 
-func GetUserIDFromRequest(r *http.Request) (int, error) {
+func GetUserIDFromRequest(r *http.Request) (string, error) {
 	ctx := r.Context()
 	userIDValue := ctx.Value(userIDKey)
 	if userIDValue == nil {
-		return 0, errors.New("userID not found in context")
+		return "", errors.New("userID not found in context")
 	}
 
-	userID, ok := userIDValue.(int)
+	userID, ok := userIDValue.(string)
 	if !ok {
-		return 0, errors.New("userID is not an integer")
+		return "", errors.New("userID is not a string")
 	}
 
 	return userID, nil

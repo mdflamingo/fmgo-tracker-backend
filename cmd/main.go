@@ -20,11 +20,11 @@ import (
 // @termsOfService http://swagger.io/terms/
 // @contact.name API Support
 // @contact.email support@example.com
-// @host localhost:8080
+// @host localhost:8000
 // @BasePath /
-// @securitydefinitions.oauth2.password OAuth2Keycloak
-// @tokenUrl http://localhost:8080/auth/realms/fmgo/protocol/openid-connect/token
 // @security OAuth2Keycloak
+// @securitydefinitions.oauth2.password OAuth2Keycloak
+// @tokenUrl http://localhost:8155/realms/fmgo/protocol/openid-connect/token
 func main() {
 	conf := config.GetConfig()
 	if err := run(conf); err != nil {
@@ -42,7 +42,7 @@ func run(conf *config.Config) error {
 
 	logger.Log.Info("Running server", zap.String("address", conf.RunAddr))
 
-	pgStorage, errStorage := pg.ConnectPG(&conf.DataBaseDSN)
+	pgStorage, errStorage := pg.ConnectPG(&conf.Postgres)
 	if errStorage != nil {
 		logger.Log.Fatal("Failed to create storage", zap.Error(errStorage))
 	}
