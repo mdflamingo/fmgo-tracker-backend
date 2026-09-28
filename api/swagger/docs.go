@@ -792,6 +792,17 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "OAuth2Keycloak": {
+            "type": "oauth2",
+            "flow": "password",
+            "tokenUrl": "http://localhost:8080/auth/realms/fmgo/protocol/openid-connect/token",
+            "scopes": {
+                "read": "Доступ на чтение",
+                "write": "Доступ на запись"
+            }
+        }
     }
 }`
 

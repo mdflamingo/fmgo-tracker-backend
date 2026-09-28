@@ -527,4 +527,12 @@ paths:
       summary: Get all users
       tags:
       - Users
+securityDefinitions:
+  OAuth2Keycloak:
+    flow: password
+    scopes:
+      read: Доступ на чтение
+      write: Доступ на запись
+    tokenUrl: http://localhost:8080/auth/realms/fmgo/protocol/openid-connect/token
+    type: oauth2
 swagger: "2.0"
