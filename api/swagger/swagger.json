@@ -10,7 +10,7 @@
         },
         "version": "1.0.0"
     },
-    "host": "localhost:8080",
+    "host": "localhost:8000",
     "basePath": "/",
     "paths": {
         "/api/project": {
@@ -791,11 +791,12 @@
         "OAuth2Keycloak": {
             "type": "oauth2",
             "flow": "password",
-            "tokenUrl": "http://localhost:8080/auth/realms/fmgo/protocol/openid-connect/token",
-            "scopes": {
-                "read": "Доступ на чтение",
-                "write": "Доступ на запись"
-            }
+            "tokenUrl": "http://localhost:8155/realms/fmgo/protocol/openid-connect/token"
         }
-    }
+    },
+    "security": [
+        {
+            "OAuth2Keycloak": []
+        }
+    ]
 }

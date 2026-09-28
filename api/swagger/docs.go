@@ -797,19 +797,20 @@ const docTemplate = `{
         "OAuth2Keycloak": {
             "type": "oauth2",
             "flow": "password",
-            "tokenUrl": "http://localhost:8080/auth/realms/fmgo/protocol/openid-connect/token",
-            "scopes": {
-                "read": "Доступ на чтение",
-                "write": "Доступ на запись"
-            }
+            "tokenUrl": "http://localhost:8155/realms/fmgo/protocol/openid-connect/token"
         }
-    }
+    },
+    "security": [
+        {
+            "OAuth2Keycloak": []
+        }
+    ]
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0.0",
-	Host:             "localhost:8080",
+	Host:             "localhost:8000",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Task Tracker API",

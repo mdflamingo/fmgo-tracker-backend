@@ -250,7 +250,7 @@ definitions:
       username:
         type: string
     type: object
-host: localhost:8080
+host: localhost:8000
 info:
   contact:
     email: support@example.com
@@ -527,12 +527,11 @@ paths:
       summary: Get all users
       tags:
       - Users
+security:
+- OAuth2Keycloak: []
 securityDefinitions:
   OAuth2Keycloak:
     flow: password
-    scopes:
-      read: Доступ на чтение
-      write: Доступ на запись
-    tokenUrl: http://localhost:8080/auth/realms/fmgo/protocol/openid-connect/token
+    tokenUrl: http://localhost:8155/realms/fmgo/protocol/openid-connect/token
     type: oauth2
 swagger: "2.0"
