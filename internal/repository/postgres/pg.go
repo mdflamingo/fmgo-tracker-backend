@@ -60,15 +60,23 @@ func NewDBStorage(dsn string) (*DBStorage, error) {
 	return &DBStorage{pool: pool}, nil
 }
 
-func InitStorage(conf *config.Config) (*DBStorage, error) {
-	if conf.DataBaseDSN == "" {
-		return nil, errors.New("DATABASE_DSN is required")
+func ConnectPG(pgConf *config.Postgres) (*DBStorage, error) {
+	logger.Log.Info("Starting initialize postgres storage")
+	dataBaseDSN := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		pgConf.PostgresUser,
+		pgConf.PostgresPassword,
+		pgConf.PostgresHost,
+		pgConf.PostgresPort,
+		pgConf.PostgresDB,
+	)
+
+	if dataBaseDSN == "" {
+		return nil, errors.New("database DSN is empty")
 	}
 
-	logger.Log.Info("Attempting to use database storage", zap.String("dsn", conf.DataBaseDSN))
-	storage, err := NewDBStorage(conf.DataBaseDSN)
+	storage, err := NewDBStorage(dataBaseDSN)
 	if err != nil {
-		logger.Log.Warn("Failed to initialize database storage", zap.Error(err))
+		logger.Log.Error("Failed to initialize database storage", zap.Error(err))
 		return nil, err
 	}
 

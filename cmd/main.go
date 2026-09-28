@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/joho/godotenv"
 	"github.com/mdflamingo/fgo-tracker-backend/internal/config"
 	"github.com/mdflamingo/fgo-tracker-backend/internal/handler"
 	"github.com/mdflamingo/fgo-tracker-backend/internal/logger"
@@ -23,13 +22,15 @@ import (
 // @contact.email support@example.com
 // @host localhost:8080
 // @BasePath /
+// @securitydefinitions.oauth2.password OAuth2Keycloak
+// @tokenUrl http://localhost:8080/auth/realms/fmgo/protocol/openid-connect/token
+// @security OAuth2Keycloak
 func main() {
-	_ = godotenv.Load()
-
-	conf := config.ParseFlags()
+	conf := config.GetConfig()
 	if err := run(conf); err != nil {
 		log.Fatal(err)
 	}
+	logger.Log.Info("Server shutdown gracefully")
 }
 
 func run(conf *config.Config) error {
@@ -41,13 +42,13 @@ func run(conf *config.Config) error {
 
 	logger.Log.Info("Running server", zap.String("address", conf.RunAddr))
 
-	storage, err := pg.InitStorage(conf)
-	if err != nil {
-		logger.Log.Fatal("Failed to create storage", zap.Error(err))
+	pgStorage, errStorage := pg.ConnectPG(&conf.DataBaseDSN)
+	if errStorage != nil {
+		logger.Log.Fatal("Failed to create storage", zap.Error(errStorage))
 	}
-	defer storage.Close()
+	defer pgStorage.Close()
 
-	r := handler.NewRouter(conf, storage)
+	r := handler.NewRouter(conf, pgStorage)
 
 	return http.ListenAndServe(conf.RunAddr, r)
 }
