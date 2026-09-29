@@ -9,8 +9,11 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
+	"github.com/mdflamingo/fgo-tracker-backend/internal/auth"
+	"github.com/mdflamingo/fgo-tracker-backend/internal/logger"
 	"github.com/mdflamingo/fgo-tracker-backend/internal/model"
 	"github.com/mdflamingo/fgo-tracker-backend/internal/validator"
+	"go.uber.org/zap"
 )
 
 func parseTaskID(r *http.Request) (uuid.UUID, error) {
@@ -113,4 +116,15 @@ func parseUUIDArray(s string) ([]uuid.UUID, error) {
 		ids = append(ids, id)
 	}
 	return ids, nil
+}
+
+func parseUUID(w http.ResponseWriter, r *http.Request) (uuid.UUID, error) {
+	creatorUUIDStr, err := auth.GetUserIDFromRequest(r)
+	if err != nil {
+		logger.Log.Error("handler: not parsed UUID from context", zap.Error(err))
+		return uuid.Nil, fmt.Errorf("invalid uuid '%s'", err)
+	}
+	creatorUUID := uuid.MustParse(creatorUUIDStr)
+
+	return creatorUUID, nil
 }

@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/go-chi/render"
-	"github.com/google/uuid"
 	"github.com/mdflamingo/fgo-tracker-backend/internal/apiresponse"
 	"github.com/mdflamingo/fgo-tracker-backend/internal/logger"
 	"github.com/mdflamingo/fgo-tracker-backend/internal/model"
@@ -65,9 +64,13 @@ func (h *ProjectHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	creatorID := uuid.MustParse("01a06bf1-8749-7cd1-884b-689d6a59f9c7") // извлекать из токена
-
-	response, err := h.projectService.CreateProject(req, creatorID)
+	creatorUUID, err := parseUUID(w, r)
+	if err != nil {
+		logger.Log.Error("handler: creator UUID parsed error", zap.Error(err))
+		apiresponse.ResponseWithError(w, r, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	response, err := h.projectService.CreateProject(req, creatorUUID)
 	if err != nil {
 		logger.Log.Error("handler: failed to create project", zap.Error(err))
 		apiresponse.ResponseWithError(w, r, http.StatusInternalServerError, "Internal Server Error")

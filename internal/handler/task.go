@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/go-chi/render"
-	"github.com/google/uuid"
 	"github.com/mdflamingo/fgo-tracker-backend/internal/apiresponse"
 	"github.com/mdflamingo/fgo-tracker-backend/internal/logger"
 	"github.com/mdflamingo/fgo-tracker-backend/internal/model"
@@ -119,9 +118,14 @@ func (h *TaskHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	creatorID := uuid.MustParse("01a06bf1-8749-7cd1-884b-689d6a59f9c7") // извлекать из токена
+	creatorUUID, err := parseUUID(w, r)
+	if err != nil {
+		logger.Log.Error("handler: creator UUID parsed error", zap.Error(err))
+		apiresponse.ResponseWithError(w, r, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
 
-	response, err := h.taskService.CreateTask(req, creatorID)
+	response, err := h.taskService.CreateTask(req, creatorUUID)
 	if err != nil {
 		logger.Log.Error("handler: failed to create task", zap.Error(err))
 		apiresponse.ResponseWithError(w, r, http.StatusInternalServerError, "Internal Server Error")
