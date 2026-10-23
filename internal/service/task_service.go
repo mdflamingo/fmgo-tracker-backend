@@ -41,7 +41,7 @@ func (s *TaskService) GetTask(taskID uuid.UUID) (*model.TaskResponse, error) {
 	return &task, nil
 }
 
-func (s *TaskService) CreateTask(req model.TaskCreateRequest, creatorID uuid.UUID) (model.TaskCreateResponse, error) {
+func (s *TaskService) CreateTask(req model.TaskCreateRequest, creator model.Identity) (model.TaskCreateResponse, error) {
 	taskID := generateUUIDv7()
 
 	createTask := model.TaskCreate{
@@ -58,7 +58,7 @@ func (s *TaskService) CreateTask(req model.TaskCreateRequest, creatorID uuid.UUI
 
 	createUserTasks = append(createUserTasks, model.TaskUserCreate{
 		Id:     generateUUIDv7(),
-		UserId: creatorID,
+		UserId: creator.ID,
 		TaskId: taskID,
 		Role:   model.TaskCreator,
 	})
@@ -85,7 +85,7 @@ func (s *TaskService) CreateTask(req model.TaskCreateRequest, creatorID uuid.UUI
 		}
 	}
 
-	if err := s.repo.CreateTask(createTask, createUserTasks); err != nil {
+	if err := s.repo.CreateTask(createTask, creator, createUserTasks); err != nil {
 		logger.Log.Error("failed to create task in repo", zap.Error(err))
 		return model.TaskCreateResponse{}, fmt.Errorf("TaskService.CreateTask: %w", err)
 	}
@@ -93,7 +93,7 @@ func (s *TaskService) CreateTask(req model.TaskCreateRequest, creatorID uuid.UUI
 	return model.TaskCreateResponse{ID: taskID}, nil
 }
 
-func (s *TaskService) UpdateTask(ctx context.Context, taskID uuid.UUID, req model.TaskUpdateRequest) error {
+func (s *TaskService) UpdateTask(ctx context.Context, taskID uuid.UUID, req model.TaskUpdateRequest, creator model.Identity) error {
 	existingTask, err := s.repo.GetOneTask(taskID)
 	if err != nil {
 		if errors.Is(err, pg.ErrTaskNotFound) {
@@ -189,7 +189,7 @@ func (s *TaskService) UpdateTask(ctx context.Context, taskID uuid.UUID, req mode
 		CompletedAt: completedAt,
 	}
 
-	if err := s.repo.UpdateTask(taskID, updateTask, updateUserTasks); err != nil {
+	if err := s.repo.UpdateTask(taskID, updateTask, creator, updateUserTasks); err != nil {
 		logger.Log.Error("failed to update task in repo", zap.String("task_id", taskID.String()), zap.Error(err))
 		return fmt.Errorf("TaskService.UpdateTask: %w", err)
 	}

@@ -118,13 +118,12 @@ func parseUUIDArray(s string) ([]uuid.UUID, error) {
 	return ids, nil
 }
 
-func parseUUID(w http.ResponseWriter, r *http.Request) (uuid.UUID, error) {
-	creatorUUIDStr, err := auth.GetUserIDFromRequest(r)
+func identityFromRequest(r *http.Request) (model.Identity, error) {
+	identity, err := auth.IdentityFromRequest(r)
 	if err != nil {
-		logger.Log.Error("handler: not parsed UUID from context", zap.Error(err))
-		return uuid.Nil, fmt.Errorf("invalid uuid '%s'", err)
+		logger.Log.Error("handler: identity not parsed from context", zap.Error(err))
+		return model.Identity{}, err
 	}
-	creatorUUID := uuid.MustParse(creatorUUIDStr)
 
-	return creatorUUID, nil
+	return identity, nil
 }

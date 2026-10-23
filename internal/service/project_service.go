@@ -27,7 +27,7 @@ func (s *ProjectService) GetList() ([]model.ProjectListResponse, error) {
 	return projects, nil
 }
 
-func (s *ProjectService) CreateProject(req model.ProjectCreateRequest, creatorID uuid.UUID) (model.ProjectCreateResponse, error) {
+func (s *ProjectService) CreateProject(req model.ProjectCreateRequest, creator model.Identity) (model.ProjectCreateResponse, error) {
 	projectID := generateUUIDv7()
 
 	createProject := model.ProjectCreate{
@@ -39,7 +39,7 @@ func (s *ProjectService) CreateProject(req model.ProjectCreateRequest, creatorID
 
 	createUserProjects = append(createUserProjects, model.ProjectUserCreate{
 		Id:        generateUUIDv7(),
-		UserId:    creatorID,
+		UserId:    creator.ID,
 		ProjectId: projectID,
 		Role:      model.ProjectOwner,
 	})
@@ -66,7 +66,7 @@ func (s *ProjectService) CreateProject(req model.ProjectCreateRequest, creatorID
 		}
 	}
 
-	if err := s.repo.CreateProject(createProject, createUserProjects); err != nil {
+	if err := s.repo.CreateProject(createProject, creator, createUserProjects); err != nil {
 		logger.Log.Error("failed to create project in repo", zap.Error(err))
 		return model.ProjectCreateResponse{}, fmt.Errorf("ProjectService.CreateProject: %w", err)
 	}

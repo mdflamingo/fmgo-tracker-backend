@@ -10,7 +10,7 @@ import (
 	"github.com/mdflamingo/fgo-tracker-backend/internal/model"
 )
 
-func (d *DBStorage) CreateProject(project model.ProjectCreate, userProjectList []model.ProjectUserCreate) error {
+func (d *DBStorage) CreateProject(project model.ProjectCreate, creator model.Identity, userProjectList []model.ProjectUserCreate) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -19,6 +19,31 @@ func (d *DBStorage) CreateProject(project model.ProjectCreate, userProjectList [
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 	defer tx.Rollback(ctx)
+
+	if err := d.EnsureUserTx(ctx, tx, creator); err != nil {
+		return err
+	}
+
+	userIDs := make([]uuid.UUID, 0, len(userProjectList))
+	seen := make(map[uuid.UUID]struct{}, len(userProjectList))
+	for _, up := range userProjectList {
+		if up.UserId == uuid.Nil {
+			continue
+		}
+		if _, ok := seen[up.UserId]; ok {
+			continue
+		}
+		seen[up.UserId] = struct{}{}
+		userIDs = append(userIDs, up.UserId)
+	}
+
+	missing, err := d.MissingUserIdsTx(ctx, tx, userIDs)
+	if err != nil {
+		return err
+	}
+	if len(missing) > 0 {
+		return &model.UnknownUsersError{IDs: missing}
+	}
 
 	_, err = tx.Exec(ctx,
 		`INSERT INTO project (id, name)

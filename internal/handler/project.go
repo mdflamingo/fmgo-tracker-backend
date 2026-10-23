@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/go-chi/render"
@@ -47,6 +48,7 @@ func (h *ProjectHandler) GetList(w http.ResponseWriter, r *http.Request) {
 // @Param request body model.ProjectCreateRequest true "Project data"
 // @Success 201 {object} model.ProjectCreateResponse "Created project ID"
 // @Failure 400 {object} apiresponse.ResponseError "Bad Request"
+// @Failure 422 {object} apiresponse.ResponseError "Unknown user ids"
 // @Failure 500 {object} apiresponse.ResponseError "Internal Server Error"
 // @Router /api/project [post]
 func (h *ProjectHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
@@ -64,14 +66,20 @@ func (h *ProjectHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	creatorUUID, err := parseUUID(w, r)
+	identity, err := identityFromRequest(r)
 	if err != nil {
-		logger.Log.Error("handler: creator UUID parsed error", zap.Error(err))
+		logger.Log.Error("handler: identity parsed error", zap.Error(err))
 		apiresponse.ResponseWithError(w, r, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
-	response, err := h.projectService.CreateProject(req, creatorUUID)
+	response, err := h.projectService.CreateProject(req, identity)
 	if err != nil {
+		var unknownUsersErr *model.UnknownUsersError
+		if errors.As(err, &unknownUsersErr) {
+			apiresponse.ResponseWithError(w, r, http.StatusUnprocessableEntity, "Unknown user ids: "+unknownUsersErr.Error())
+			return
+		}
+
 		logger.Log.Error("handler: failed to create project", zap.Error(err))
 		apiresponse.ResponseWithError(w, r, http.StatusInternalServerError, "Internal Server Error")
 		return

@@ -1,6 +1,6 @@
 basePath: /
 definitions:
-  apiresponse.ResponseError:
+  github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError:
     properties:
       code:
         type: integer
@@ -11,7 +11,7 @@ definitions:
       error:
         type: string
     type: object
-  model.ProjectCreateRequest:
+  github_com_mdflamingo_fgo-tracker-backend_internal_model.ProjectCreateRequest:
     properties:
       member_ids:
         example:
@@ -32,27 +32,27 @@ definitions:
     required:
     - name
     type: object
-  model.ProjectCreateResponse:
+  github_com_mdflamingo_fgo-tracker-backend_internal_model.ProjectCreateResponse:
     properties:
       id:
         example: 60601fee-2bf1-4721-ae6f-7636e79a0cba
         type: string
     type: object
-  model.ProjectDB:
+  github_com_mdflamingo_fgo-tracker-backend_internal_model.ProjectDB:
     properties:
       id:
         type: string
       name:
         type: string
     type: object
-  model.ProjectListResponse:
+  github_com_mdflamingo_fgo-tracker-backend_internal_model.ProjectListResponse:
     properties:
       id:
         type: string
       name:
         type: string
     type: object
-  model.TaskCreateRequest:
+  github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskCreateRequest:
     properties:
       assigned_ids:
         example:
@@ -73,7 +73,7 @@ definitions:
         type: string
       priority:
         allOf:
-        - $ref: '#/definitions/model.TaskPriority'
+        - $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskPriority'
         enum:
         - low
         - medium
@@ -91,7 +91,7 @@ definitions:
         type: array
       status:
         allOf:
-        - $ref: '#/definitions/model.TaskStatus'
+        - $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskStatus'
         enum:
         - backlog
         - in_progress
@@ -102,13 +102,13 @@ definitions:
     - name
     - project_id
     type: object
-  model.TaskCreateResponse:
+  github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskCreateResponse:
     properties:
       id:
         example: 60601fee-2bf1-4721-ae6f-7636e79a0cba
         type: string
     type: object
-  model.TaskListResponse:
+  github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskListResponse:
     properties:
       description:
         example: Some description
@@ -121,7 +121,7 @@ definitions:
         type: string
       priority:
         allOf:
-        - $ref: '#/definitions/model.TaskPriority'
+        - $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskPriority'
         example: medium
       project_id:
         example: 60601fee-2bf1-4721-ae6f-7636e79a0cba
@@ -130,10 +130,10 @@ definitions:
         type: string
       status:
         allOf:
-        - $ref: '#/definitions/model.TaskStatus'
+        - $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskStatus'
         example: backlog
     type: object
-  model.TaskPriority:
+  github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskPriority:
     enum:
     - low
     - medium
@@ -145,17 +145,17 @@ definitions:
     - TaskPriorityMedium
     - TaskPriorityHigh
     - TaskPriorityCritical
-  model.TaskResponse:
+  github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskResponse:
     properties:
       assignees:
         items:
-          $ref: '#/definitions/model.UserDB'
+          $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.UserDB'
         type: array
       completed:
         example: "2025-07-01T00:00:00Z"
         type: string
       creator:
-        $ref: '#/definitions/model.UserDB'
+        $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.UserDB'
       deadline:
         example: "2025-07-01T00:00:00Z"
         type: string
@@ -170,20 +170,20 @@ definitions:
         type: string
       priority:
         allOf:
-        - $ref: '#/definitions/model.TaskPriority'
+        - $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskPriority'
         example: medium
       project:
-        $ref: '#/definitions/model.ProjectDB'
+        $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.ProjectDB'
       reviewers:
         items:
-          $ref: '#/definitions/model.UserDB'
+          $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.UserDB'
         type: array
       status:
         allOf:
-        - $ref: '#/definitions/model.TaskStatus'
+        - $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskStatus'
         example: backlog
     type: object
-  model.TaskStatus:
+  github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskStatus:
     enum:
     - backlog
     - in_progress
@@ -195,7 +195,7 @@ definitions:
     - TaskStatusInProgress
     - TaskStatusReview
     - TaskStatusDone
-  model.TaskUpdateRequest:
+  github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskUpdateRequest:
     properties:
       assigned_ids:
         example:
@@ -219,7 +219,7 @@ definitions:
         type: string
       priority:
         allOf:
-        - $ref: '#/definitions/model.TaskPriority'
+        - $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskPriority'
         enum:
         - low
         - medium
@@ -237,7 +237,7 @@ definitions:
         type: array
       status:
         allOf:
-        - $ref: '#/definitions/model.TaskStatus'
+        - $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskStatus'
         enum:
         - backlog
         - in_progress
@@ -248,7 +248,7 @@ definitions:
     - name
     - project_id
     type: object
-  model.UserDB:
+  github_com_mdflamingo_fgo-tracker-backend_internal_model.UserDB:
     properties:
       email:
         type: string
@@ -262,7 +262,9 @@ info:
   contact:
     email: support@example.com
     name: API Support
-  description: API for task tracker
+  description: API for task tracker. OAuth2 password flow через Keycloak realm fmgo.
+    В диалоге Authorize выбери Client credentials, location = "Request body", укажи
+    client_id и отметь хотя бы один scope.
   termsOfService: http://swagger.io/terms/
   title: Task Tracker API
   version: 1.0.0
@@ -278,22 +280,26 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/model.ProjectCreateRequest'
+          $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.ProjectCreateRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created project ID
           schema:
-            $ref: '#/definitions/model.ProjectCreateResponse'
+            $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.ProjectCreateResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/apiresponse.ResponseError'
+            $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError'
+        "422":
+          description: Unknown user ids
+          schema:
+            $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apiresponse.ResponseError'
+            $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError'
       summary: Create new projects
       tags:
       - Projects
@@ -307,12 +313,12 @@ paths:
           description: Tasks
           schema:
             items:
-              $ref: '#/definitions/model.ProjectListResponse'
+              $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.ProjectListResponse'
             type: array
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apiresponse.ResponseError'
+            $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError'
       summary: Get all projects
       tags:
       - Projects
@@ -327,22 +333,26 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/model.TaskCreateRequest'
+          $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskCreateRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created task ID
           schema:
-            $ref: '#/definitions/model.TaskCreateResponse'
+            $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskCreateResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/apiresponse.ResponseError'
+            $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError'
+        "422":
+          description: Unknown user ids
+          schema:
+            $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apiresponse.ResponseError'
+            $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError'
       summary: Create new task
       tags:
       - Tasks
@@ -361,15 +371,15 @@ paths:
         "400":
           description: Invalid task ID
           schema:
-            $ref: '#/definitions/apiresponse.ResponseError'
+            $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError'
         "404":
           description: Task not found
           schema:
-            $ref: '#/definitions/apiresponse.ResponseError'
+            $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apiresponse.ResponseError'
+            $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError'
       summary: Delete task
       tags:
       - Tasks
@@ -387,19 +397,19 @@ paths:
         "200":
           description: Task found
           schema:
-            $ref: '#/definitions/model.TaskResponse'
+            $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskResponse'
         "400":
           description: Invalid task ID
           schema:
-            $ref: '#/definitions/apiresponse.ResponseError'
+            $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError'
         "404":
           description: Task not found
           schema:
-            $ref: '#/definitions/apiresponse.ResponseError'
+            $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apiresponse.ResponseError'
+            $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError'
       summary: Get task by ID
       tags:
       - Tasks
@@ -418,22 +428,26 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/model.TaskUpdateRequest'
+          $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskUpdateRequest'
       responses:
         "200":
           description: OK
         "400":
           description: Invalid request
           schema:
-            $ref: '#/definitions/apiresponse.ResponseError'
+            $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError'
         "404":
           description: Task not found
           schema:
-            $ref: '#/definitions/apiresponse.ResponseError'
+            $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError'
+        "422":
+          description: Unknown user ids
+          schema:
+            $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apiresponse.ResponseError'
+            $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError'
       summary: Task update
       tags:
       - Task
@@ -502,16 +516,16 @@ paths:
           description: Tasks
           schema:
             items:
-              $ref: '#/definitions/model.TaskListResponse'
+              $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskListResponse'
             type: array
         "400":
           description: Bad Request (invalid parameters)
           schema:
-            $ref: '#/definitions/apiresponse.ResponseError'
+            $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apiresponse.ResponseError'
+            $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError'
       summary: Get all tasks
       tags:
       - Tasks
@@ -525,12 +539,12 @@ paths:
           description: Users
           schema:
             items:
-              $ref: '#/definitions/model.UserDB'
+              $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.UserDB'
             type: array
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apiresponse.ResponseError'
+            $ref: '#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError'
       summary: Get all users
       tags:
       - Users
@@ -539,6 +553,10 @@ security:
 securityDefinitions:
   OAuth2Keycloak:
     flow: password
+    scopes:
+      email: Email пользователя
+      openid: OpenID Connect - обязательный scope, без него токен не выпускается
+      profile: Базовый профиль пользователя (name, given_name, family_name)
     tokenUrl: http://localhost:8155/realms/fmgo/protocol/openid-connect/token
     type: oauth2
 swagger: "2.0"

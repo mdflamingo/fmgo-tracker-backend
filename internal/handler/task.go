@@ -101,6 +101,7 @@ func (h *TaskHandler) GetTask(w http.ResponseWriter, r *http.Request) {
 // @Param request body model.TaskCreateRequest true "Task data"
 // @Success 201 {object} model.TaskCreateResponse "Created task ID"
 // @Failure 400 {object} apiresponse.ResponseError "Bad Request"
+// @Failure 422 {object} apiresponse.ResponseError "Unknown user ids"
 // @Failure 500 {object} apiresponse.ResponseError "Internal Server Error"
 // @Router /api/task [post]
 func (h *TaskHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
@@ -118,15 +119,21 @@ func (h *TaskHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	creatorUUID, err := parseUUID(w, r)
+	identity, err := identityFromRequest(r)
 	if err != nil {
-		logger.Log.Error("handler: creator UUID parsed error", zap.Error(err))
+		logger.Log.Error("handler: identity parsed error", zap.Error(err))
 		apiresponse.ResponseWithError(w, r, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
-	response, err := h.taskService.CreateTask(req, creatorUUID)
+	response, err := h.taskService.CreateTask(req, identity)
 	if err != nil {
+		var unknownUsersErr *model.UnknownUsersError
+		if errors.As(err, &unknownUsersErr) {
+			apiresponse.ResponseWithError(w, r, http.StatusUnprocessableEntity, "Unknown user ids: "+unknownUsersErr.Error())
+			return
+		}
+
 		logger.Log.Error("handler: failed to create task", zap.Error(err))
 		apiresponse.ResponseWithError(w, r, http.StatusInternalServerError, "Internal Server Error")
 		return
@@ -145,6 +152,7 @@ func (h *TaskHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
 // @Success 200
 // @Failure 400 {object} apiresponse.ResponseError "Invalid request"
 // @Failure 404 {object} apiresponse.ResponseError "Task not found"
+// @Failure 422 {object} apiresponse.ResponseError "Unknown user ids"
 // @Failure 500 {object} apiresponse.ResponseError "Internal Server Error"
 // @Router /api/task/{id} [put]
 func (h *TaskHandler) UpdateTask(w http.ResponseWriter, r *http.Request) {
@@ -168,13 +176,27 @@ func (h *TaskHandler) UpdateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.taskService.UpdateTask(r.Context(), taskID, req)
+	identity, err := identityFromRequest(r)
+	if err != nil {
+		logger.Log.Error("handler: identity parsed error", zap.Error(err))
+		apiresponse.ResponseWithError(w, r, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+
+	err = h.taskService.UpdateTask(r.Context(), taskID, req, identity)
 	if err != nil {
 		if errors.Is(err, pg.ErrTaskNotFound) {
 			logger.Log.Warn("handler: task not found", zap.Error(err))
 			apiresponse.ResponseWithError(w, r, http.StatusNotFound, "Task not found")
 			return
 		}
+
+		var unknownUsersErr *model.UnknownUsersError
+		if errors.As(err, &unknownUsersErr) {
+			apiresponse.ResponseWithError(w, r, http.StatusUnprocessableEntity, "Unknown user ids: "+unknownUsersErr.Error())
+			return
+		}
+
 		logger.Log.Error("handler: failed to update task", zap.Error(err))
 		apiresponse.ResponseWithError(w, r, http.StatusInternalServerError, "Internal Server Error")
 		return

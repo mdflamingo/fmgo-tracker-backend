@@ -15,7 +15,7 @@ var (
 	ErrTaskNotFound = errors.New("task not found")
 )
 
-func (d *DBStorage) CreateTask(task model.TaskCreate, userTaskList []model.TaskUserCreate) error {
+func (d *DBStorage) CreateTask(task model.TaskCreate, creator model.Identity, userTaskList []model.TaskUserCreate) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -24,6 +24,31 @@ func (d *DBStorage) CreateTask(task model.TaskCreate, userTaskList []model.TaskU
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 	defer tx.Rollback(ctx)
+
+	if err := d.EnsureUserTx(ctx, tx, creator); err != nil {
+		return err
+	}
+
+	userIDs := make([]uuid.UUID, 0, len(userTaskList))
+	seen := make(map[uuid.UUID]struct{}, len(userTaskList))
+	for _, ut := range userTaskList {
+		if ut.UserId == uuid.Nil {
+			continue
+		}
+		if _, ok := seen[ut.UserId]; ok {
+			continue
+		}
+		seen[ut.UserId] = struct{}{}
+		userIDs = append(userIDs, ut.UserId)
+	}
+
+	missing, err := d.MissingUserIdsTx(ctx, tx, userIDs)
+	if err != nil {
+		return err
+	}
+	if len(missing) > 0 {
+		return &model.UnknownUsersError{IDs: missing}
+	}
 
 	_, err = tx.Exec(ctx,
 		`INSERT INTO task (id, name, description, status, priority, project_id, deadline)
@@ -186,7 +211,7 @@ func derefStr(s *string) string {
 	return ""
 }
 
-func (d *DBStorage) UpdateTask(taskID uuid.UUID, task model.TaskUpdate, userTasks []model.TaskUserCreate) error {
+func (d *DBStorage) UpdateTask(taskID uuid.UUID, task model.TaskUpdate, creator model.Identity, userTasks []model.TaskUserCreate) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -195,6 +220,31 @@ func (d *DBStorage) UpdateTask(taskID uuid.UUID, task model.TaskUpdate, userTask
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 	defer tx.Rollback(ctx)
+
+	if err := d.EnsureUserTx(ctx, tx, creator); err != nil {
+		return err
+	}
+
+	userIDs := make([]uuid.UUID, 0, len(userTasks))
+	seen := make(map[uuid.UUID]struct{}, len(userTasks))
+	for _, ut := range userTasks {
+		if ut.UserId == uuid.Nil {
+			continue
+		}
+		if _, ok := seen[ut.UserId]; ok {
+			continue
+		}
+		seen[ut.UserId] = struct{}{}
+		userIDs = append(userIDs, ut.UserId)
+	}
+
+	missing, err := d.MissingUserIdsTx(ctx, tx, userIDs)
+	if err != nil {
+		return err
+	}
+	if len(missing) > 0 {
+		return &model.UnknownUsersError{IDs: missing}
+	}
 
 	result, err := tx.Exec(ctx,
 		`UPDATE task

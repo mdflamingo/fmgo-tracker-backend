@@ -39,7 +39,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.ProjectCreateRequest"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.ProjectCreateRequest"
                         }
                     }
                 ],
@@ -47,19 +47,25 @@ const docTemplate = `{
                     "201": {
                         "description": "Created project ID",
                         "schema": {
-                            "$ref": "#/definitions/model.ProjectCreateResponse"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.ProjectCreateResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/apiresponse.ResponseError"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError"
+                        }
+                    },
+                    "422": {
+                        "description": "Unknown user ids",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/apiresponse.ResponseError"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError"
                         }
                     }
                 }
@@ -81,14 +87,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.ProjectListResponse"
+                                "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.ProjectListResponse"
                             }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/apiresponse.ResponseError"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError"
                         }
                     }
                 }
@@ -114,7 +120,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.TaskCreateRequest"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskCreateRequest"
                         }
                     }
                 ],
@@ -122,19 +128,25 @@ const docTemplate = `{
                     "201": {
                         "description": "Created task ID",
                         "schema": {
-                            "$ref": "#/definitions/model.TaskCreateResponse"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskCreateResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/apiresponse.ResponseError"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError"
+                        }
+                    },
+                    "422": {
+                        "description": "Unknown user ids",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/apiresponse.ResponseError"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError"
                         }
                     }
                 }
@@ -234,20 +246,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.TaskListResponse"
+                                "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskListResponse"
                             }
                         }
                     },
                     "400": {
                         "description": "Bad Request (invalid parameters)",
                         "schema": {
-                            "$ref": "#/definitions/apiresponse.ResponseError"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/apiresponse.ResponseError"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError"
                         }
                     }
                 }
@@ -276,25 +288,25 @@ const docTemplate = `{
                     "200": {
                         "description": "Task found",
                         "schema": {
-                            "$ref": "#/definitions/model.TaskResponse"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid task ID",
                         "schema": {
-                            "$ref": "#/definitions/apiresponse.ResponseError"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError"
                         }
                     },
                     "404": {
                         "description": "Task not found",
                         "schema": {
-                            "$ref": "#/definitions/apiresponse.ResponseError"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/apiresponse.ResponseError"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError"
                         }
                     }
                 }
@@ -322,7 +334,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.TaskUpdateRequest"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskUpdateRequest"
                         }
                     }
                 ],
@@ -333,19 +345,25 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid request",
                         "schema": {
-                            "$ref": "#/definitions/apiresponse.ResponseError"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError"
                         }
                     },
                     "404": {
                         "description": "Task not found",
                         "schema": {
-                            "$ref": "#/definitions/apiresponse.ResponseError"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError"
+                        }
+                    },
+                    "422": {
+                        "description": "Unknown user ids",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/apiresponse.ResponseError"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError"
                         }
                     }
                 }
@@ -372,19 +390,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid task ID",
                         "schema": {
-                            "$ref": "#/definitions/apiresponse.ResponseError"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError"
                         }
                     },
                     "404": {
                         "description": "Task not found",
                         "schema": {
-                            "$ref": "#/definitions/apiresponse.ResponseError"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/apiresponse.ResponseError"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError"
                         }
                     }
                 }
@@ -406,14 +424,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.UserDB"
+                                "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.UserDB"
                             }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/apiresponse.ResponseError"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError"
                         }
                     }
                 }
@@ -421,7 +439,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "apiresponse.ResponseError": {
+        "github_com_mdflamingo_fgo-tracker-backend_internal_apiresponse.ResponseError": {
             "type": "object",
             "properties": {
                 "code": {
@@ -438,7 +456,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.ProjectCreateRequest": {
+        "github_com_mdflamingo_fgo-tracker-backend_internal_model.ProjectCreateRequest": {
             "type": "object",
             "required": [
                 "name"
@@ -469,7 +487,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.ProjectCreateResponse": {
+        "github_com_mdflamingo_fgo-tracker-backend_internal_model.ProjectCreateResponse": {
             "type": "object",
             "properties": {
                 "id": {
@@ -478,7 +496,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.ProjectDB": {
+        "github_com_mdflamingo_fgo-tracker-backend_internal_model.ProjectDB": {
             "type": "object",
             "properties": {
                 "id": {
@@ -489,7 +507,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.ProjectListResponse": {
+        "github_com_mdflamingo_fgo-tracker-backend_internal_model.ProjectListResponse": {
             "type": "object",
             "properties": {
                 "id": {
@@ -500,7 +518,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.TaskCreateRequest": {
+        "github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskCreateRequest": {
             "type": "object",
             "required": [
                 "name",
@@ -539,7 +557,7 @@ const docTemplate = `{
                     ],
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.TaskPriority"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskPriority"
                         }
                     ],
                     "example": "medium"
@@ -566,14 +584,14 @@ const docTemplate = `{
                     ],
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.TaskStatus"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskStatus"
                         }
                     ],
                     "example": "backlog"
                 }
             }
         },
-        "model.TaskCreateResponse": {
+        "github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskCreateResponse": {
             "type": "object",
             "properties": {
                 "id": {
@@ -582,7 +600,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.TaskListResponse": {
+        "github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskListResponse": {
             "type": "object",
             "properties": {
                 "description": {
@@ -600,7 +618,7 @@ const docTemplate = `{
                 "priority": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.TaskPriority"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskPriority"
                         }
                     ],
                     "example": "medium"
@@ -615,14 +633,14 @@ const docTemplate = `{
                 "status": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.TaskStatus"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskStatus"
                         }
                     ],
                     "example": "backlog"
                 }
             }
         },
-        "model.TaskPriority": {
+        "github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskPriority": {
             "type": "string",
             "enum": [
                 "low",
@@ -637,13 +655,13 @@ const docTemplate = `{
                 "TaskPriorityCritical"
             ]
         },
-        "model.TaskResponse": {
+        "github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskResponse": {
             "type": "object",
             "properties": {
                 "assignees": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.UserDB"
+                        "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.UserDB"
                     }
                 },
                 "completed": {
@@ -651,7 +669,7 @@ const docTemplate = `{
                     "example": "2025-07-01T00:00:00Z"
                 },
                 "creator": {
-                    "$ref": "#/definitions/model.UserDB"
+                    "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.UserDB"
                 },
                 "deadline": {
                     "type": "string",
@@ -672,31 +690,31 @@ const docTemplate = `{
                 "priority": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.TaskPriority"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskPriority"
                         }
                     ],
                     "example": "medium"
                 },
                 "project": {
-                    "$ref": "#/definitions/model.ProjectDB"
+                    "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.ProjectDB"
                 },
                 "reviewers": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.UserDB"
+                        "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.UserDB"
                     }
                 },
                 "status": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.TaskStatus"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskStatus"
                         }
                     ],
                     "example": "backlog"
                 }
             }
         },
-        "model.TaskStatus": {
+        "github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskStatus": {
             "type": "string",
             "enum": [
                 "backlog",
@@ -711,7 +729,7 @@ const docTemplate = `{
                 "TaskStatusDone"
             ]
         },
-        "model.TaskUpdateRequest": {
+        "github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskUpdateRequest": {
             "type": "object",
             "required": [
                 "name",
@@ -754,7 +772,7 @@ const docTemplate = `{
                     ],
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.TaskPriority"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskPriority"
                         }
                     ],
                     "example": "medium"
@@ -781,14 +799,14 @@ const docTemplate = `{
                     ],
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.TaskStatus"
+                            "$ref": "#/definitions/github_com_mdflamingo_fgo-tracker-backend_internal_model.TaskStatus"
                         }
                     ],
                     "example": "backlog"
                 }
             }
         },
-        "model.UserDB": {
+        "github_com_mdflamingo_fgo-tracker-backend_internal_model.UserDB": {
             "type": "object",
             "properties": {
                 "email": {
@@ -807,7 +825,12 @@ const docTemplate = `{
         "OAuth2Keycloak": {
             "type": "oauth2",
             "flow": "password",
-            "tokenUrl": "http://localhost:8155/realms/fmgo/protocol/openid-connect/token"
+            "tokenUrl": "http://localhost:8155/realms/fmgo/protocol/openid-connect/token",
+            "scopes": {
+                "email": "Email пользователя",
+                "openid": "OpenID Connect - обязательный scope, без него токен не выпускается",
+                "profile": "Базовый профиль пользователя (name, given_name, family_name)"
+            }
         }
     },
     "security": [
@@ -824,7 +847,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Task Tracker API",
-	Description:      "API for task tracker",
+	Description:      "API for task tracker. OAuth2 password flow через Keycloak realm fmgo. В диалоге Authorize выбери Client credentials, location = \"Request body\", укажи client_id и отметь хотя бы один scope.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

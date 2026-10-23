@@ -16,7 +16,7 @@ import (
 
 // @title Task Tracker API
 // @version 1.0.0
-// @description API for task tracker
+// @description API for task tracker. OAuth2 password flow через Keycloak realm fmgo. В диалоге Authorize выбери Client credentials, location = "Request body", укажи client_id и отметь хотя бы один scope.
 // @termsOfService http://swagger.io/terms/
 // @contact.name API Support
 // @contact.email support@example.com
@@ -25,6 +25,9 @@ import (
 // @security OAuth2Keycloak
 // @securitydefinitions.oauth2.password OAuth2Keycloak
 // @tokenUrl http://localhost:8155/realms/fmgo/protocol/openid-connect/token
+// @scope.openid OpenID Connect - обязательный scope, без него токен не выпускается
+// @scope.profile Базовый профиль пользователя (name, given_name, family_name)
+// @scope.email Email пользователя
 func main() {
 	conf := config.GetConfig()
 	if err := run(conf); err != nil {
